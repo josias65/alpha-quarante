@@ -1,0 +1,105 @@
+/* ============================================
+   ALPHA QUARANTE — Responsive
+   ============================================ */
+
+@media (max-width: 1024px) {
+  .nav { padding: 18px 28px; }
+  .nav.scrolled { padding: 12px 28px; }
+  section, .cta-section { padding: 80px 28px; }
+  .info-row { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 768px) {
+  .nav { padding: 16px 20px; }
+  .nav-links {
+    position: fixed;
+    top: 0; right: -100%;
+    bottom: 0;
+    width: min(80vw, 300px);
+    background: rgba(26, 5, 8, 0.97);
+    backdrop-filter: blur(20px);
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 48px 32px;
+    gap: 24px;
+    border-left: 1px solid var(--line);
+    transition: right 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    z-index: 99;
+  }
+  .nav-links.open { right: 0; }
+  .nav-links a { font-size: 1.1rem; }
+  .nav-burger { display: flex; }
+  .nav-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 98;
+  }
+  .nav-overlay.visible { display: block; }
+
+  .hero { padding: 110px 20px 72px; }
+  .hero-cta { flex-direction: column; align-items: center; }
+  .btn-primary, .btn-secondary {
+    width: 100%;
+    max-width: 300px;
+    justify-content: center;
+  }
+
+  .flip-card { width: 64px; height: 64px; }
+  .flip-card-front, .flip-card-back { font-size: 1.5rem; border-radius: 12px; }
+  .countdown { gap: 8px; }
+  .countdown-separator { font-size: 1.4rem; margin-top: 14px; }
+
+  section, .cta-section { padding: 64px 20px; }
+  .about-quote { padding: 22px 20px; }
+  .about-quote p { font-size: 1.1rem; }
+
+  .form-hero { padding: 120px 20px 32px; }
+  .form-card { padding: 28px 20px; border-radius: 18px; }
+  .form-row { grid-template-columns: 1fr; }
+  .form-nav { flex-direction: column-reverse; }
+  .form-nav .btn-primary,
+  .form-nav .btn-back { width: 100%; justify-content: center; }
+  .progress-step-label { display: none; }
+
+  footer { padding: 32px 20px; }
+  .footer-inner {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+  }
+  .footer-links { justify-content: center; flex-wrap: wrap; }
+
+  .hide-mobile { display: none; }
+}
+
+@media (max-width: 480px) {
+  .hero-title { font-size: clamp(2.6rem, 14vw, 3.6rem); }
+  .flip-card { width: 54px; height: 54px; }
+  .flip-card-front, .flip-card-back { font-size: 1.25rem; }
+  .countdown-separator { font-size: 1.2rem; margin-top: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal { opacity: 1; transform: none; }
+  .hero-title .word,
+  .edition-badge,
+  .hero-subtitle,
+  .hero-cta,
+  .countdown-wrapper {
+    opacity: 1 !important;
+    transform: none !important;
+    animation: none !important;
+  }
+}
+
+@media (pointer: coarse) {
+  body { cursor: auto; }
+}

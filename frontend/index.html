@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Alpha Quarante — À l'image de Christ, selon sa ressemblance, pour dominer. Genèse 1:26." />
+  <title>Alpha Quarante</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%238E001C' width='100' height='100' rx='20'/><text y='.72em' x='50%' text-anchor='middle' font-size='55' fill='%23D4AF37'>40</text></svg>" />
+</head>
+<body>
+
+  <div class="page-curtain" id="pageCurtain"><span id="curtainBrand">Alpha 40</span></div>
+  <div class="cursor-dot" id="cursorDot"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+  <div class="scroll-progress-bar" id="scrollProgressBar"></div>
+
+  <nav class="nav" id="navbar">
+    <a href="index.html" class="nav-logo">Alpha<span>40</span></a>
+    <div class="nav-overlay" id="navOverlay"></div>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about">À propos</a></li>
+      <li><a href="inscription.html" class="btn-nav magnetic">S'inscrire</a></li>
+    </ul>
+    <button class="nav-burger" id="navBurger" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <section class="hero" id="hero">
+    <div class="hero-bg alive" id="heroBg"></div>
+    <div class="hero-veil"></div>
+    <canvas id="hero-particles-canvas"></canvas>
+
+    <div class="hero-content">
+      <span class="edition-badge">
+        <span class="badge-dot"></span>
+        Genèse 1:26
+      </span>
+
+      <h1 class="hero-title">
+        <span class="word">Alpha</span>
+        <span class="word accent">Quarante</span>
+      </h1>
+
+      <div class="hero-cta">
+        <a href="inscription.html" class="btn-primary btn-pulse magnetic">
+          <span>S'inscrire</span>
+          <svg class="btn-arrow" viewBox="0 0 20 20" fill="none">
+            <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </a>
+        <a href="#about" class="btn-secondary magnetic">À propos</a>
+      </div>
+    </div>
+
+    <div class="countdown-wrapper" id="countdown-wrapper">
+      <p class="countdown-label">Dans</p>
+      <div class="countdown" id="countdown">
+        <div class="countdown-item">
+          <div class="flip-card" id="flip-days">
+            <div class="flip-card-front" id="days-front">00</div>
+            <div class="flip-card-back" id="days-back">00</div>
+          </div>
+          <span class="countdown-unit">Jours</span>
+        </div>
+        <span class="countdown-separator">:</span>
+        <div class="countdown-item">
+          <div class="flip-card" id="flip-hours">
+            <div class="flip-card-front" id="hours-front">00</div>
+            <div class="flip-card-back" id="hours-back">00</div>
+          </div>
+          <span class="countdown-unit">Heures</span>
+        </div>
+        <span class="countdown-separator">:</span>
+        <div class="countdown-item">
+          <div class="flip-card" id="flip-minutes">
+            <div class="flip-card-front" id="minutes-front">00</div>
+            <div class="flip-card-back" id="minutes-back">00</div>
+          </div>
+          <span class="countdown-unit">Min</span>
+        </div>
+        <span class="countdown-separator">:</span>
+        <div class="countdown-item">
+          <div class="flip-card" id="flip-seconds">
+            <div class="flip-card-front" id="seconds-front">00</div>
+            <div class="flip-card-back" id="seconds-back">00</div>
+          </div>
+          <span class="countdown-unit">Sec</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="scroll-indicator" id="scrollIndicator">
+      <div class="scroll-mouse"><div class="scroll-wheel"></div></div>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <div class="about-inner">
+      <span class="section-label reveal" style="justify-content:center;">À propos</span>
+      <h2 class="section-title reveal reveal-delay-1">
+        À l'image de <span class="gold">Christ</span>
+      </h2>
+      <p class="section-text reveal reveal-delay-2">
+        Selon sa ressemblance, pour dominer.
+      </p>
+      <blockquote class="about-quote reveal reveal-delay-3">
+        <p>« Faisons l'homme à notre image, selon notre ressemblance, et qu'il domine… »</p>
+        <cite>— Genèse 1:26</cite>
+      </blockquote>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="cta-inner">
+      <h2 class="section-title reveal">S'inscrire</h2>
+      <a href="inscription.html" class="btn-primary magnetic reveal reveal-delay-1">
+        <span>Réserver ma place</span>
+        <svg class="btn-arrow" viewBox="0 0 20 20" fill="none">
+          <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">Alpha<span>40</span></div>
+      <ul class="footer-links">
+        <li><a href="#about">À propos</a></li>
+        <li><a href="inscription.html">S'inscrire</a></li>
+      </ul>
+    </div>
+    <p class="footer-copy">© 2026 Alpha Quarante</p>
+  </footer>
+
+  <script src="js/nav.js"></script>
+  <script src="js/cursor.js"></script>
+  <script src="js/countdown.js"></script>
+  <script src="js/scroll.js"></script>
+  <script src="js/particles-hero.js"></script>
+  <script src="js/motion.js"></script>
+</body>
+</html>

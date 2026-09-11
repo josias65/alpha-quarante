@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Inscription confirmée — Alpha Quarante</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <link rel="stylesheet" href="css/responsive.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect fill='%238E001C' width='100' height='100' rx='20'/><text y='.72em' x='50%' text-anchor='middle' font-size='55' fill='%23D4AF37'>40</text></svg>" />
+</head>
+<body class="confirmation-page">
+
+  <canvas id="confetti-canvas"></canvas>
+
+  <div class="confirmation-content">
+    <div class="check-wrapper">
+      <svg class="check-svg" viewBox="0 0 52 52" xmlns="http://www.w3.org/2000/svg">
+        <path class="check-path" d="M10 26 L22 38 L42 16" />
+      </svg>
+    </div>
+
+    <h1 class="confirmation-title">
+      Merci<span class="confirmation-name" id="confirmName"></span>
+    </h1>
+
+    <p class="confirmation-subtitle">
+      Tu fais partie d'Alpha 40.
+    </p>
+
+    <div class="confirmation-email-note">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+        <polyline points="22,6 12,13 2,6"/>
+      </svg>
+      <span id="confirmMailMsg">Vérifie ta boîte mail — <strong id="confirmEmail">ton email</strong></span>
+    </div>
+
+    <p class="confirmation-hint" id="confirmHint">
+      À l'image de Christ, selon sa ressemblance, pour dominer — Genèse 1:26
+    </p>
+
+    <div class="confirmation-actions">
+      <a href="index.html" class="btn-primary magnetic">
+        <span>Retour à l'accueil</span>
+        <svg class="btn-arrow" viewBox="0 0 20 20" fill="none">
+          <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+
+  <script src="js/confetti.js"></script>
+  <script src="js/motion.js"></script>
+  <script>
+    (function () {
+      const prenom = sessionStorage.getItem('aq_prenom');
+      const email = sessionStorage.getItem('aq_email');
+      const sent = sessionStorage.getItem('aq_email_sent') === '1';
+      const nameEl = document.getElementById('confirmName');
+      const emailEl = document.getElementById('confirmEmail');
+      const hint = document.getElementById('confirmHint');
+
+      if (nameEl && prenom) nameEl.textContent = ', ' + prenom;
+      if (emailEl && email) emailEl.textContent = email;
+
+      if (!sent && hint) {
+        hint.textContent = 'Inscription enregistrée. L’invitation email sera activée dès que le compte mail Alpha 40 sera configuré.';
+      }
+
+      sessionStorage.removeItem('aq_prenom');
+      sessionStorage.removeItem('aq_email');
+      sessionStorage.removeItem('aq_email_sent');
+    })();
+  </script>
+</body>
+</html>

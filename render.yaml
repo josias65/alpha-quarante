@@ -1,0 +1,26 @@
+services:
+  - type: web
+    name: alpha-quarante
+    runtime: node
+    plan: free
+    region: frankfurt
+    buildCommand: cd backend && npm install --omit=dev
+    startCommand: node backend/server.js
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: HOST
+        value: 0.0.0.0
+      - key: EMAIL_USER
+        sync: false
+      - key: EMAIL_PASS
+        sync: false
+      - key: EMAIL_FROM_NAME
+        value: Alpha Quarante
+      - key: INVITE_LINK
+        value: https://alpha40.com/
+      - key: EVENT_LINK
+        value: https://alpha40.com/
+      - key: FRONTEND_URL
+        sync: false

@@ -1,0 +1,19 @@
+# Git ignore
+node_modules/
+.env
+.env.*
+!.env.example
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+db/
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+dist/
+tools/
+*.exe
+OUVRIR_SITE_PUBLIC.bat
+DEMARRER_SERVEUR.bat
+
