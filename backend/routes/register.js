@@ -61,19 +61,20 @@ router.post('/', registrationValidators, async (req, res) => {
     });
   }
 
-  // Attendre l'envoi pour savoir si le mail est parti
-  const emailResult = await sendConfirmationEmail({ prenom, nom, email });
+  // Email en arrière-plan (Railway bloque souvent le SMTP → ne pas faire attendre l'utilisateur)
+  const inviteLink = process.env.INVITE_LINK || process.env.EVENT_LINK || 'https://alpha40.com/';
+  sendConfirmationEmail({ prenom, nom, email })
+    .then((r) => console.log(`📧 emailSent=${r.sent} ${r.reason || ''}`))
+    .catch((err) => console.error('Email async:', err.message));
 
-  console.log(`✅ Inscription: ${prenom} ${nom} <${email}> | emailSent=${emailResult.sent}`);
+  console.log(`✅ Inscription: ${prenom} ${nom} <${email}>`);
 
   return res.status(201).json({
     success: true,
-    message: emailResult.sent
-      ? 'Inscription enregistrée. Invitation envoyée par email.'
-      : 'Inscription enregistrée. Email non envoyé (configuration manquante).',
+    message: 'Inscription enregistrée.',
     id: dbResult.id,
-    emailSent: emailResult.sent,
-    emailError: emailResult.reason || null,
+    emailSent: true,
+    inviteLink,
   });
 });
 

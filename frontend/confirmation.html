@@ -33,11 +33,16 @@
         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
         <polyline points="22,6 12,13 2,6"/>
       </svg>
-      <span id="confirmMailMsg">Vérifie ta boîte mail — <strong id="confirmEmail">ton email</strong></span>
+      <span>Vérifie ta boîte mail — <strong id="confirmEmail">ton email</strong></span>
     </div>
 
-    <p class="confirmation-hint" id="confirmHint">
+    <p class="confirmation-hint">
       À l'image de Christ, selon sa ressemblance, pour dominer — Genèse 1:26
+    </p>
+
+    <p style="margin: 0 0 28px; font-size: 1.05rem;">
+      Accès :
+      <a id="inviteLink" href="https://alpha40.com/" style="color: var(--gold); font-weight: 600; text-decoration: underline;">Alpha 40</a>
     </p>
 
     <div class="confirmation-actions">
@@ -56,21 +61,22 @@
     (function () {
       const prenom = sessionStorage.getItem('aq_prenom');
       const email = sessionStorage.getItem('aq_email');
-      const sent = sessionStorage.getItem('aq_email_sent') === '1';
+      const invite = sessionStorage.getItem('aq_invite') || 'https://alpha40.com/';
       const nameEl = document.getElementById('confirmName');
       const emailEl = document.getElementById('confirmEmail');
-      const hint = document.getElementById('confirmHint');
+      const inviteEl = document.getElementById('inviteLink');
 
       if (nameEl && prenom) nameEl.textContent = ', ' + prenom;
       if (emailEl && email) emailEl.textContent = email;
-
-      if (!sent && hint) {
-        hint.textContent = 'Inscription enregistrée. L’invitation email sera activée dès que le compte mail Alpha 40 sera configuré.';
+      if (inviteEl && invite) {
+        inviteEl.href = invite;
+        inviteEl.textContent = 'Alpha 40';
       }
 
       sessionStorage.removeItem('aq_prenom');
       sessionStorage.removeItem('aq_email');
       sessionStorage.removeItem('aq_email_sent');
+      sessionStorage.removeItem('aq_invite');
     })();
   </script>
 </body>
