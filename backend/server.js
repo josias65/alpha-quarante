@@ -72,22 +72,35 @@ if (fs.existsSync(frontendPath)) {
   app.use(express.static(frontendPath));
 }
 
-app.get('/api/health', async (req, res) => {
-  const githubStore = require('./services/githubStore');
-  let count = null;
-  try {
-    const { getCount } = require('./services/storage');
-    count = await getCount();
-  } catch {
-    count = null;
-  }
-  res.json({
+app.get('/api/health', (req, res) => {
+  // Endpoint ultra-léger : ne doit JAMAIS appeler GitHub / email / Excel
+  // sinon Render marque le service unhealthy → 502 Bad Gateway
+  res.status(200).json({
     success: true,
     message: 'ALPHA 40 API is running',
     timestamp: new Date().toISOString(),
-    storage: githubStore.isConfigured() ? 'durable-github' : 'local-only',
-    inscriptions: count,
+    storage: require('./services/githubStore').isConfigured() ? 'durable-github' : 'local-only',
   });
+});
+
+/** Stats admin (peut être plus lent) */
+app.get('/api/admin/stats', async (req, res) => {
+  const token = process.env.ADMIN_TOKEN || '';
+  if (!token || req.query.token !== token) {
+    return res.status(401).json({ success: false, message: 'Non autorisé.' });
+  }
+  try {
+    const { getCount } = require('./services/storage');
+    const count = await getCount();
+    res.json({
+      success: true,
+      storage: require('./services/githubStore').isConfigured() ? 'durable-github' : 'local-only',
+      inscriptions: count,
+      timestamp: new Date().toISOString(),
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 app.use('/api/register', registerRoute);
