@@ -72,11 +72,21 @@ if (fs.existsSync(frontendPath)) {
   app.use(express.static(frontendPath));
 }
 
-app.get('/api/health', (req, res) => {
+app.get('/api/health', async (req, res) => {
+  const githubStore = require('./services/githubStore');
+  let count = null;
+  try {
+    const { getCount } = require('./services/storage');
+    count = await getCount();
+  } catch {
+    count = null;
+  }
   res.json({
     success: true,
-    message: 'Alpha Quarante API is running',
+    message: 'ALPHA 40 API is running',
     timestamp: new Date().toISOString(),
+    storage: githubStore.isConfigured() ? 'durable-github' : 'local-only',
+    inscriptions: count,
   });
 });
 
@@ -96,6 +106,25 @@ app.get('/api/admin/export.xlsx', async (req, res) => {
     return res.send(Buffer.from(buffer));
   } catch (err) {
     console.error('Export Excel:', err.message);
+    return res.status(500).json({ success: false, message: 'Export impossible.' });
+  }
+});
+
+/** Export CSV (ouvre directement dans Excel) */
+app.get('/api/admin/export.csv', async (req, res) => {
+  const token = process.env.ADMIN_TOKEN || '';
+  if (!token || req.query.token !== token) {
+    return res.status(401).json({ success: false, message: 'Non autorisé.' });
+  }
+  try {
+    const { getAllRegistrations } = require('./services/storage');
+    const { toCsv } = require('./services/githubStore');
+    const inscriptions = await getAllRegistrations();
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="alpha40-inscriptions.csv"');
+    return res.send('\uFEFF' + toCsv(inscriptions));
+  } catch (err) {
+    console.error('Export CSV:', err.message);
     return res.status(500).json({ success: false, message: 'Export impossible.' });
   }
 });

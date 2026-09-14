@@ -9,7 +9,6 @@ const router = express.Router();
 
 const { registerParticipant } = require('../services/storage');
 const { sendConfirmationEmail } = require('../services/email');
-const { appendRegistration } = require('../services/excel');
 const { appendToSheet } = require('../services/sheets');
 
 const registrationValidators = [
@@ -48,7 +47,7 @@ router.post('/', registrationValidators, async (req, res) => {
   const { prenom, nom, email, sujetPriere } = req.body;
   const created_at = new Date().toISOString();
 
-  const dbResult = registerParticipant({ prenom, nom, email, sujetPriere });
+  const dbResult = await registerParticipant({ prenom, nom, email, sujetPriere, created_at });
 
   if (!dbResult.success) {
     if (dbResult.alreadyRegistered) {
@@ -66,11 +65,7 @@ router.post('/', registrationValidators, async (req, res) => {
 
   const row = { prenom, nom, email, sujetPriere: sujetPriere || '', created_at };
 
-  // Excel + Google Sheet en arrière-plan (ne bloquent pas la réponse)
-  appendRegistration(row)
-    .then((r) => console.log(`📊 excel=${r.success}`))
-    .catch((err) => console.error('Excel async:', err.message));
-
+  // Google Sheet optionnel (si webhook configuré)
   appendToSheet(row)
     .then((r) => console.log(`📗 sheets=${r.success || r.skipped} ${r.reason || r.error || ''}`))
     .catch((err) => console.error('Sheets async:', err.message));
@@ -91,10 +86,10 @@ router.post('/', registrationValidators, async (req, res) => {
   });
 });
 
-router.get('/count', (req, res) => {
+router.get('/count', async (req, res) => {
   const { getCount } = require('../services/storage');
   try {
-    res.json({ success: true, count: getCount() });
+    res.json({ success: true, count: await getCount() });
   } catch {
     res.status(500).json({ success: false });
   }
