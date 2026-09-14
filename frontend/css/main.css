@@ -382,6 +382,13 @@ ul { list-style: none; }
   color: transparent;
   filter: drop-shadow(0 2px 16px rgba(184, 16, 46, 0.45));
 }
+.hero-title .accent {
+  display: block;
+  background: linear-gradient(125deg, var(--gold-soft), var(--gold), var(--cream));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 .hero-subtitle {
   font-family: var(--font-script);
   font-size: clamp(1.35rem, 3.4vw, 1.85rem);
