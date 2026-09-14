@@ -1,12 +1,9 @@
 /**
  * Alpha Quarante — Email Service
- * Prefer HTTPS APIs on Railway (SMTP often blocked).
- * Fallback: Gmail SMTP with short timeouts.
+ * Sur Render, SMTP Gmail est souvent bloqué/lent → timeouts courts + retry port 465.
  */
 
 const nodemailer = require('nodemailer');
-
-let transporter = null;
 
 function isEmailConfigured() {
   if ((process.env.RESEND_API_KEY || '').trim()) return true;
@@ -18,23 +15,21 @@ function isEmailConfigured() {
   return true;
 }
 
-function getTransporter() {
-  if (transporter) return transporter;
-  transporter = nodemailer.createTransport({
+function createTransporter({ port, secure }) {
+  return nodemailer.createTransport({
     host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    requireTLS: true,
+    port,
+    secure,
+    requireTLS: !secure,
     family: 4,
-    connectionTimeout: 8000,
-    greetingTimeout: 8000,
-    socketTimeout: 12000,
+    connectionTimeout: 6000,
+    greetingTimeout: 6000,
+    socketTimeout: 10000,
     auth: {
       user: process.env.EMAIL_USER.trim(),
       pass: process.env.EMAIL_PASS.replace(/\s/g, ''),
     },
   });
-  return transporter;
 }
 
 function escapeHtml(str) {
@@ -94,7 +89,7 @@ function buildEmailText({ prenom, inviteLink }) {
   ].join('\n');
 }
 
-async function sendViaResend({ prenom, nom, email, inviteLink, fromName, fromEmail }) {
+async function sendViaResend({ prenom, email, inviteLink, fromName, fromEmail }) {
   const key = process.env.RESEND_API_KEY.trim();
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
@@ -116,6 +111,37 @@ async function sendViaResend({ prenom, nom, email, inviteLink, fromName, fromEma
   }
 }
 
+async function sendViaSmtp({ prenom, email, inviteLink, fromName, fromEmail }) {
+  const mail = {
+    from: `"${fromName}" <${fromEmail}>`,
+    replyTo: `"${fromName}" <${fromEmail}>`,
+    to: email,
+    subject: 'Bienvenue dans ALPHA 40 ❤️🔥',
+    text: buildEmailText({ prenom, inviteLink }),
+    html: buildEmailHTML({ prenom, inviteLink }),
+  };
+
+  // Essai 465 (SSL) puis 587 (STARTTLS)
+  const attempts = [
+    { port: 465, secure: true },
+    { port: 587, secure: false },
+  ];
+
+  let lastErr;
+  for (const cfg of attempts) {
+    try {
+      const transporter = createTransporter(cfg);
+      await transporter.sendMail(mail);
+      transporter.close();
+      return;
+    } catch (err) {
+      lastErr = err;
+      console.warn(`SMTP ${cfg.port} échoué:`, err.message);
+    }
+  }
+  throw lastErr || new Error('SMTP indisponible');
+}
+
 async function sendConfirmationEmail({ prenom, nom, email }) {
   if (!isEmailConfigured()) {
     const reason = 'EMAIL non configuré';
@@ -129,16 +155,9 @@ async function sendConfirmationEmail({ prenom, nom, email }) {
 
   try {
     if ((process.env.RESEND_API_KEY || '').trim()) {
-      await sendViaResend({ prenom, nom, email, inviteLink, fromName, fromEmail });
+      await sendViaResend({ prenom, email, inviteLink, fromName, fromEmail });
     } else {
-      await getTransporter().sendMail({
-        from: `"${fromName}" <${fromEmail}>`,
-        replyTo: `"${fromName}" <${fromEmail}>`,
-        to: email,
-        subject: 'Bienvenue dans ALPHA 40 ❤️🔥',
-        text: buildEmailText({ prenom, inviteLink }),
-        html: buildEmailHTML({ prenom, inviteLink }),
-      });
+      await sendViaSmtp({ prenom, email, inviteLink, fromName, fromEmail });
     }
     console.log(`📧 Invitation envoyée à ${email}`);
     return { sent: true };
