@@ -12,14 +12,14 @@
     prenom: document.getElementById('prenom'),
     nom: document.getElementById('nom'),
     email: document.getElementById('email'),
-    telephone: document.getElementById('telephone'),
+    sujetPriere: document.getElementById('sujetPriere'),
   };
 
   const validators = {
     prenom: (v) => v.trim().length >= 2,
     nom: (v) => v.trim().length >= 2,
     email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v.trim()),
-    telephone: (v) => v.trim() === '' || /^[\+\d\s\-\(\)]{7,20}$/.test(v.trim()),
+    sujetPriere: (v) => v.trim().length <= 500,
   };
 
   function showError(id, show) {
@@ -34,11 +34,11 @@
   }
 
   function setupRealTime() {
-    ['prenom', 'nom', 'email', 'telephone'].forEach((id) => {
+    ['prenom', 'nom', 'email', 'sujetPriere'].forEach((id) => {
       const el = fields[id];
       if (!el) return;
       const validate = () => {
-        if (id === 'telephone' && el.value.trim() === '') {
+        if (id === 'sujetPriere' && el.value.trim() === '') {
           el.classList.remove('valid', 'invalid');
           showError(id, false);
           return;
@@ -60,10 +60,10 @@
       showError(id, !ok);
       if (!ok) valid = false;
     });
-    if (fields.telephone.value.trim() !== '') {
-      const ok = validators.telephone(fields.telephone.value);
-      setFieldState(fields.telephone, ok);
-      showError('telephone', !ok);
+    if (fields.sujetPriere && fields.sujetPriere.value.trim() !== '') {
+      const ok = validators.sujetPriere(fields.sujetPriere.value);
+      setFieldState(fields.sujetPriere, ok);
+      showError('sujetPriere', !ok);
       if (!ok) valid = false;
     }
     return valid;
@@ -112,7 +112,7 @@
   function populateSummary() {
     setText('sum-name', `${fields.prenom.value.trim()} ${fields.nom.value.trim()}`);
     setText('sum-email', fields.email.value.trim());
-    setText('sum-tel', fields.telephone.value.trim());
+    setText('sum-priere', fields.sujetPriere ? fields.sujetPriere.value.trim() : '');
   }
 
   async function handleSubmit(e) {
@@ -129,7 +129,7 @@
       prenom: fields.prenom.value.trim(),
       nom: fields.nom.value.trim(),
       email: fields.email.value.trim(),
-      telephone: fields.telephone.value.trim(),
+      sujetPriere: fields.sujetPriere ? fields.sujetPriere.value.trim() : '',
     };
 
     try {

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Inscription — Alpha Quarante</title>
+  <title>Rejoindre Alpha 40 — ALPHA 40</title>
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/animations.css" />
   <link rel="stylesheet" href="css/responsive.css" />
@@ -17,6 +17,7 @@
     <ul class="nav-links" id="navLinks">
       <li><a href="index.html">Accueil</a></li>
       <li><a href="index.html#about">À propos</a></li>
+      <li><a href="inscription.html" class="btn-nav magnetic">Rejoindre Alpha 40</a></li>
     </ul>
     <button class="nav-burger" id="navBurger" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -24,15 +25,10 @@
   </nav>
 
   <div class="form-hero">
-    <span class="edition-badge" style="opacity:1;animation:none;">
-      <span class="badge-dot"></span>
-      Genèse 1:26
-    </span>
     <h1 class="hero-title" style="opacity:1;">
       <span class="word" style="opacity:1;transform:none;animation:none;">Rejoindre</span>
       <span class="word accent" style="opacity:1;transform:none;animation:none;">Alpha 40</span>
     </h1>
-    <p class="hero-subtitle">À l'image de Christ, selon sa ressemblance, pour dominer.</p>
   </div>
 
   <div class="progress-wrapper">
@@ -77,9 +73,9 @@
           </div>
 
           <div class="form-group">
-            <label for="telephone">Téléphone <span class="optional">(optionnel)</span></label>
-            <input type="tel" id="telephone" name="telephone" placeholder="" autocomplete="tel" />
-            <div class="field-error" id="telephone-error">Format invalide.</div>
+            <label for="sujetPriere">Sujet de prière <span class="optional">(optionnel) 🙏</span></label>
+            <textarea id="sujetPriere" name="sujetPriere" rows="3" placeholder="Partage un sujet de prière si tu le souhaites…"></textarea>
+            <div class="field-error" id="sujetPriere-error">Texte trop long.</div>
           </div>
 
           <div class="form-nav" style="justify-content:flex-end;">
@@ -108,8 +104,8 @@
               <div class="summary-value" id="sum-email">—</div>
             </div>
             <div class="summary-group" style="border-bottom:none;">
-              <div class="summary-label">Téléphone</div>
-              <div class="summary-value" id="sum-tel">—</div>
+              <div class="summary-label">Sujet de prière</div>
+              <div class="summary-value" id="sum-priere">—</div>
             </div>
           </div>
 
@@ -135,9 +131,11 @@
       <div class="footer-logo">Alpha<span>40</span></div>
       <ul class="footer-links">
         <li><a href="index.html">Accueil</a></li>
+        <li><a href="index.html#about">À propos</a></li>
+        <li><a href="inscription.html">Rejoindre Alpha 40</a></li>
       </ul>
     </div>
-    <p class="footer-copy">© 2026 Alpha Quarante</p>
+    <p class="footer-copy">© 2026 ALPHA 40</p>
   </footer>
 
   <script src="js/nav.js"></script>

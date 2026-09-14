@@ -27,10 +27,10 @@ const registrationValidators = [
     .isEmail().withMessage("L'adresse email est invalide.")
     .normalizeEmail(),
 
-  body('telephone')
+  body('sujetPriere')
     .optional({ nullable: true, checkFalsy: true })
     .trim()
-    .matches(/^[\+\d\s\-\(\)]{7,20}$/).withMessage('Numéro de téléphone invalide.'),
+    .isLength({ max: 500 }).withMessage('Le sujet de prière est trop long.'),
 ];
 
 router.post('/', registrationValidators, async (req, res) => {
@@ -43,9 +43,9 @@ router.post('/', registrationValidators, async (req, res) => {
     });
   }
 
-  const { prenom, nom, email, telephone } = req.body;
+  const { prenom, nom, email, sujetPriere } = req.body;
 
-  const dbResult = registerParticipant({ prenom, nom, email, telephone });
+  const dbResult = registerParticipant({ prenom, nom, email, sujetPriere });
 
   if (!dbResult.success) {
     if (dbResult.alreadyRegistered) {

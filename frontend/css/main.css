@@ -338,7 +338,7 @@ ul { list-style: none; }
   font-weight: 600;
   line-height: 0.95;
   letter-spacing: -0.03em;
-  margin-bottom: 36px;
+  margin-bottom: 18px;
 }
 .hero-title .word {
   display: inline-block;
@@ -358,7 +358,7 @@ ul { list-style: none; }
 .hero-subtitle {
   font-size: clamp(1rem, 2.2vw, 1.2rem);
   color: var(--muted);
-  max-width: 420px;
+  max-width: 560px;
   margin: 0 auto 36px;
   opacity: 0;
   animation: fadeSlideUp 0.9s var(--ease-silk) 0.85s forwards;
@@ -507,6 +507,11 @@ section {
   color: var(--muted);
   max-width: 520px;
   line-height: 1.7;
+}
+.about-inner .section-text {
+  max-width: 640px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .text-center { text-align: center; }
 .text-center .section-text { margin-left: auto; margin-right: auto; }

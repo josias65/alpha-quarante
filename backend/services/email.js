@@ -46,8 +46,7 @@ function buildEmailHTML({ prenom, nom, inviteLink }) {
     <p style="margin:0 0 16px;">Bonjour ${prenom},</p>
     <p style="margin:0 0 16px;">Ton inscription à <strong>Alpha 40</strong> est confirmée.</p>
     <p style="margin:0 0 16px;font-style:italic;color:#444444;">
-      À l'image de Christ, selon sa ressemblance, pour dominer.<br />
-      <span style="font-style:normal;font-size:13px;color:#666666;">— Genèse 1:26</span>
+      40 nuits où le Seigneur nous aiguise pour impacter dans nos sphères d'autorités.
     </p>
     <p style="margin:0 0 8px;">Voici ton accès :</p>
     <p style="margin:0 0 24px;font-size:17px;">
@@ -69,8 +68,7 @@ function buildEmailText({ prenom, inviteLink }) {
     '',
     'Ton inscription à Alpha 40 est confirmée.',
     '',
-    "À l'image de Christ, selon sa ressemblance, pour dominer.",
-    '— Genèse 1:26',
+    "40 nuits où le Seigneur nous aiguise pour impacter dans nos sphères d'autorités.",
     '',
     'Accès Alpha 40 :',
     inviteLink,

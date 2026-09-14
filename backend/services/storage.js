@@ -53,15 +53,16 @@ function registerParticipant(data) {
     }
 
     const inscription = {
-      id:         Date.now(),
-      prenom:     data.prenom,
-      nom:        data.nom,
-      email:      emailLow,
-      telephone:  data.telephone || null,
-      motivation: data.motivation || null,
-      niveau:     data.niveau || null,
-      source:     data.source || null,
-      created_at: new Date().toISOString(),
+      id:          Date.now(),
+      prenom:      data.prenom,
+      nom:         data.nom,
+      email:       emailLow,
+      sujetPriere: data.sujetPriere || null,
+      telephone:   data.telephone || null,
+      motivation:  data.motivation || null,
+      niveau:      data.niveau || null,
+      source:      data.source || null,
+      created_at:  new Date().toISOString(),
     };
 
     db.inscriptions.push(inscription);
