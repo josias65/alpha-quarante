@@ -1,11 +1,16 @@
 /**
- * Alpha Quarante — Email Service
- * Sur Render, SMTP Gmail est souvent bloqué/lent → timeouts courts + retry port 465.
+ * ALPHA 40 — Envoi d'emails via HTTPS (Render bloque le SMTP Gmail)
+ *
+ * Priorité :
+ * 1) EMAIL_WEBHOOK_URL  → Google Apps Script (MailApp) — recommandé
+ * 2) RESEND_API_KEY     → Resend (nécessite domaine vérifié pour la prod)
+ * 3) SMTP Gmail         → secours local uniquement
  */
 
 const nodemailer = require('nodemailer');
 
 function isEmailConfigured() {
+  if ((process.env.EMAIL_WEBHOOK_URL || '').trim()) return true;
   if ((process.env.RESEND_API_KEY || '').trim()) return true;
   const user = (process.env.EMAIL_USER || '').trim();
   const pass = (process.env.EMAIL_PASS || '').replace(/\s/g, '');
@@ -89,8 +94,34 @@ function buildEmailText({ prenom, inviteLink }) {
   ].join('\n');
 }
 
-async function sendViaResend({ prenom, email, inviteLink, fromName, fromEmail }) {
+async function sendViaWebhook({ prenom, nom, email, inviteLink }) {
+  const url = process.env.EMAIL_WEBHOOK_URL.trim();
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      prenom,
+      nom: nom || '',
+      email,
+      inviteLink,
+      subject: 'Bienvenue dans ALPHA 40 ❤️🔥',
+      html: buildEmailHTML({ prenom, inviteLink }),
+      text: buildEmailText({ prenom, inviteLink }),
+    }),
+    redirect: 'follow',
+  });
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`Email webhook ${res.status}: ${body}`);
+  }
+}
+
+async function sendViaResend({ prenom, email, inviteLink, fromName }) {
   const key = process.env.RESEND_API_KEY.trim();
+  // Sans domaine vérifié, Resend n'accepte que onboarding@resend.dev (tests)
+  const fromEmail = (process.env.RESEND_FROM || 'onboarding@resend.dev').trim();
+  const replyTo = (process.env.EMAIL_USER || '').trim() || undefined;
+
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -98,8 +129,9 @@ async function sendViaResend({ prenom, email, inviteLink, fromName, fromEmail })
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({
-      from: `${fromName} <${fromEmail || 'onboarding@resend.dev'}>`,
+      from: `${fromName} <${fromEmail}>`,
       to: [email],
+      reply_to: replyTo,
       subject: 'Bienvenue dans ALPHA 40 ❤️🔥',
       html: buildEmailHTML({ prenom, inviteLink }),
       text: buildEmailText({ prenom, inviteLink }),
@@ -121,7 +153,6 @@ async function sendViaSmtp({ prenom, email, inviteLink, fromName, fromEmail }) {
     html: buildEmailHTML({ prenom, inviteLink }),
   };
 
-  // Essai 465 (SSL) puis 587 (STARTTLS)
   const attempts = [
     { port: 465, secure: true },
     { port: 587, secure: false },
@@ -154,8 +185,10 @@ async function sendConfirmationEmail({ prenom, nom, email }) {
   const fromEmail = (process.env.EMAIL_USER || '').trim();
 
   try {
-    if ((process.env.RESEND_API_KEY || '').trim()) {
-      await sendViaResend({ prenom, email, inviteLink, fromName, fromEmail });
+    if ((process.env.EMAIL_WEBHOOK_URL || '').trim()) {
+      await sendViaWebhook({ prenom, nom, email, inviteLink });
+    } else if ((process.env.RESEND_API_KEY || '').trim()) {
+      await sendViaResend({ prenom, email, inviteLink, fromName });
     } else {
       await sendViaSmtp({ prenom, email, inviteLink, fromName, fromEmail });
     }
