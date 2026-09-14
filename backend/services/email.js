@@ -1,15 +1,16 @@
 /**
- * ALPHA 40 — Envoi d'emails via HTTPS (Render bloque le SMTP Gmail)
+ * ALPHA 40 — Envoi d'emails
  *
- * Priorité :
- * 1) EMAIL_WEBHOOK_URL  → Google Apps Script (MailApp) — recommandé
- * 2) RESEND_API_KEY     → Resend (nécessite domaine vérifié pour la prod)
- * 3) SMTP Gmail         → secours local uniquement
+ * Sur Render, SMTP est bloqué. On déclenche donc un GitHub Action
+ * (repository_dispatch) qui envoie le mail via Gmail SMTP.
+ *
+ * Secours : EMAIL_WEBHOOK_URL / RESEND_API_KEY / SMTP local.
  */
 
 const nodemailer = require('nodemailer');
 
 function isEmailConfigured() {
+  if ((process.env.GITHUB_DATA_TOKEN || process.env.GITHUB_TOKEN || '').trim()) return true;
   if ((process.env.EMAIL_WEBHOOK_URL || '').trim()) return true;
   if ((process.env.RESEND_API_KEY || '').trim()) return true;
   const user = (process.env.EMAIL_USER || '').trim();
@@ -94,6 +95,37 @@ function buildEmailText({ prenom, inviteLink }) {
   ].join('\n');
 }
 
+async function sendViaGithubAction({ prenom, email, inviteLink }) {
+  const token = (process.env.GITHUB_DATA_TOKEN || process.env.GITHUB_TOKEN || '').trim();
+  const owner = process.env.GITHUB_EMAIL_OWNER || 'josias65';
+  const repo = process.env.GITHUB_EMAIL_REPO || 'alpha-quarante';
+  if (!token) throw new Error('GITHUB_DATA_TOKEN manquant pour dispatch email');
+
+  const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/dispatches`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/vnd.github+json',
+      'X-GitHub-Api-Version': '2022-11-28',
+      'User-Agent': 'alpha40-app',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      event_type: 'send-welcome-email',
+      client_payload: {
+        prenom: prenom || '',
+        email,
+        inviteLink,
+      },
+    }),
+  });
+
+  if (!res.ok) {
+    const body = await res.text();
+    throw new Error(`GitHub dispatch ${res.status}: ${body}`);
+  }
+}
+
 async function sendViaWebhook({ prenom, nom, email, inviteLink }) {
   const url = process.env.EMAIL_WEBHOOK_URL.trim();
   const res = await fetch(url, {
@@ -118,7 +150,6 @@ async function sendViaWebhook({ prenom, nom, email, inviteLink }) {
 
 async function sendViaResend({ prenom, email, inviteLink, fromName }) {
   const key = process.env.RESEND_API_KEY.trim();
-  // Sans domaine vérifié, Resend n'accepte que onboarding@resend.dev (tests)
   const fromEmail = (process.env.RESEND_FROM || 'onboarding@resend.dev').trim();
   const replyTo = (process.env.EMAIL_USER || '').trim() || undefined;
 
@@ -185,6 +216,12 @@ async function sendConfirmationEmail({ prenom, nom, email }) {
   const fromEmail = (process.env.EMAIL_USER || '').trim();
 
   try {
+    // Priorité : GitHub Action (marche sur Render)
+    if ((process.env.GITHUB_DATA_TOKEN || process.env.GITHUB_TOKEN || '').trim()) {
+      await sendViaGithubAction({ prenom, email, inviteLink });
+      console.log(`📧 Dispatch email GitHub Action pour ${email}`);
+      return { sent: true, via: 'github-action' };
+    }
     if ((process.env.EMAIL_WEBHOOK_URL || '').trim()) {
       await sendViaWebhook({ prenom, nom, email, inviteLink });
     } else if ((process.env.RESEND_API_KEY || '').trim()) {
