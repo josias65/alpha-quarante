@@ -350,12 +350,37 @@ ul { list-style: none; }
 }
 .hero-title .word:nth-child(1) { animation-delay: 0.45s; }
 .hero-title .word:nth-child(2) { animation-delay: 0.62s; }
-.hero-title .accent {
+.hero-title .welcome {
   display: block;
-  background: linear-gradient(120deg, var(--gold-soft), var(--gold), var(--cream));
+  font-family: var(--font-script);
+  font-size: clamp(1.55rem, 4.2vw, 2.35rem);
+  font-weight: 500;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  line-height: 1.2;
+  margin-bottom: 0.28em;
+  background: linear-gradient(115deg, var(--gold-soft) 0%, var(--cream) 45%, var(--gold) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+.hero-title .brand {
+  display: block;
+}
+.hero-title .brand-name {
+  background: linear-gradient(125deg, var(--gold-soft) 0%, var(--gold) 40%, #F2E6C0 70%, var(--gold-deep) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 18px rgba(212, 175, 55, 0.35));
+}
+.hero-title .brand-num {
+  margin-left: 0.12em;
+  background: linear-gradient(145deg, #FF4D6A 0%, var(--red-glow) 35%, var(--red) 70%, var(--gold) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 2px 16px rgba(184, 16, 46, 0.45));
 }
 .hero-subtitle {
   font-family: var(--font-script);
