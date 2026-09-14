@@ -15,12 +15,18 @@ services:
       - key: HOST
         value: 0.0.0.0
       - key: EMAIL_FROM_NAME
-        value: Alpha Quarante
+        value: ALPHA 40
       - key: INVITE_LINK
-        value: https://alpha40.com/
+        value: https://meet.google.com/eyy-bofp-zyb
       - key: EVENT_LINK
-        value: https://alpha40.com/
+        value: https://meet.google.com/eyy-bofp-zyb
+      - key: FRONTEND_URL
+        value: https://alpha-quarante.onrender.com
       - key: EMAIL_USER
         sync: false
       - key: EMAIL_PASS
+        sync: false
+      - key: ADMIN_TOKEN
+        sync: false
+      - key: SHEETS_WEBHOOK_URL
         sync: false

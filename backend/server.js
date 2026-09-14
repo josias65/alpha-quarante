@@ -82,6 +82,24 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/register', registerRoute);
 
+/** Téléchargement Excel des inscriptions (sujets de prière inclus) */
+app.get('/api/admin/export.xlsx', async (req, res) => {
+  const token = process.env.ADMIN_TOKEN || '';
+  if (!token || req.query.token !== token) {
+    return res.status(401).json({ success: false, message: 'Non autorisé.' });
+  }
+  try {
+    const { getExcelBuffer } = require('./services/excel');
+    const buffer = await getExcelBuffer();
+    res.setHeader('Content-Type', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+    res.setHeader('Content-Disposition', 'attachment; filename="alpha40-inscriptions.xlsx"');
+    return res.send(Buffer.from(buffer));
+  } catch (err) {
+    console.error('Export Excel:', err.message);
+    return res.status(500).json({ success: false, message: 'Export impossible.' });
+  }
+});
+
 app.get(['/inscription', '/confirmation'], (req, res) => {
   const page = req.path.replace('/', '') + '.html';
   res.sendFile(path.join(frontendPath, page));

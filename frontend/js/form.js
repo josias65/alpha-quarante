@@ -144,7 +144,7 @@
         sessionStorage.setItem('aq_prenom', payload.prenom);
         sessionStorage.setItem('aq_email', payload.email);
         sessionStorage.setItem('aq_email_sent', data.emailSent ? '1' : '0');
-        sessionStorage.setItem('aq_invite', data.inviteLink || 'https://alpha40.com/');
+        sessionStorage.setItem('aq_invite', data.inviteLink || 'https://meet.google.com/eyy-bofp-zyb');
         window.location.href = 'confirmation.html';
       } else if (res.status === 409) {
         if (globalErr) {

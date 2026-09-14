@@ -37,8 +37,8 @@
     </div>
 
     <p style="margin: 0 0 28px; font-size: 1.05rem;">
-      Accès :
-      <a id="inviteLink" href="https://alpha40.com/" style="color: var(--gold); font-weight: 600; text-decoration: underline;">Alpha 40</a>
+      Accès Meet :
+      <a id="inviteLink" href="https://meet.google.com/eyy-bofp-zyb" style="color: var(--gold); font-weight: 600; text-decoration: underline;">Rejoindre ALPHA 40</a>
     </p>
 
     <div class="confirmation-actions">
@@ -57,7 +57,7 @@
     (function () {
       const prenom = sessionStorage.getItem('aq_prenom');
       const email = sessionStorage.getItem('aq_email');
-      const invite = sessionStorage.getItem('aq_invite') || 'https://alpha40.com/';
+      const invite = sessionStorage.getItem('aq_invite') || 'https://meet.google.com/eyy-bofp-zyb';
       const nameEl = document.getElementById('confirmName');
       const emailEl = document.getElementById('confirmEmail');
       const inviteEl = document.getElementById('inviteLink');
@@ -66,7 +66,7 @@
       if (emailEl && email) emailEl.textContent = email;
       if (inviteEl && invite) {
         inviteEl.href = invite;
-        inviteEl.textContent = 'Alpha 40';
+        inviteEl.textContent = 'Rejoindre ALPHA 40';
       }
 
       sessionStorage.removeItem('aq_prenom');

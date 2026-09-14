@@ -37,26 +37,38 @@ function getTransporter() {
   return transporter;
 }
 
-function buildEmailHTML({ prenom, nom, inviteLink }) {
+function escapeHtml(str) {
+  return String(str || '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function buildEmailHTML({ prenom, inviteLink }) {
+  const name = escapeHtml(prenom);
+  const link = escapeHtml(inviteLink);
   return `<!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
 <body style="margin:0;padding:0;background:#ffffff;color:#222222;">
-  <div style="max-width:560px;margin:0 auto;padding:28px 20px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.6;color:#222222;">
-    <p style="margin:0 0 16px;">Bonjour ${prenom},</p>
-    <p style="margin:0 0 16px;">Ton inscription à <strong>Alpha 40</strong> est confirmée.</p>
-    <p style="margin:0 0 16px;font-style:italic;color:#444444;">
-      40 nuits où le Seigneur nous aiguise pour impacter dans nos sphères d'autorités.
+  <div style="max-width:560px;margin:0 auto;padding:28px 20px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.7;color:#222222;">
+    <p style="margin:0 0 8px;">Bonjour ${name},</p>
+    <p style="margin:0 0 18px;font-size:17px;font-weight:700;">Merci pour ton inscription ! ❤️🔥</p>
+    <p style="margin:0 0 16px;font-size:16px;font-weight:600;">Bienvenue dans la famille ALPHA 40 ! 🫂✨</p>
+    <p style="margin:0 0 16px;">
+      On est vraiment heureux de t’avoir parmi nous. Cette aventure, on veut la vivre ensemble,
+      dans la bonne humeur, le partage et la fraternité.
     </p>
-    <p style="margin:0 0 8px;">Voici ton accès :</p>
-    <p style="margin:0 0 24px;font-size:17px;">
-      <a href="${inviteLink}" style="color:#1a73e8;text-decoration:underline;font-weight:600;">Alpha 40</a>
+    <p style="margin:0 0 24px;">
+      Merci pour ta confiance, et surtout… bienvenue chez toi ! ❤️
     </p>
-    <p style="margin:0 0 8px;font-size:13px;color:#666666;">
-      Si le lien ne s'ouvre pas :<br />
-      <span style="color:#1a73e8;word-break:break-all;">${inviteLink}</span>
+    <p style="margin:0 0 10px;font-weight:600;">Voici ton accès Meet :</p>
+    <p style="margin:0 0 8px;font-size:17px;">
+      <a href="${link}" style="color:#1a73e8;text-decoration:underline;font-weight:700;">Rejoindre ALPHA 40 sur Google Meet</a>
     </p>
-    <p style="margin:24px 0 0;font-size:13px;color:#888888;">À bientôt,<br />L'équipe Alpha 40</p>
+    <p style="margin:0 0 8px;font-size:13px;color:#666666;word-break:break-all;">${link}</p>
+    <p style="margin:28px 0 0;font-size:13px;color:#888888;">À bientôt,<br />L'équipe ALPHA 40</p>
   </div>
 </body>
 </html>`;
@@ -66,15 +78,19 @@ function buildEmailText({ prenom, inviteLink }) {
   return [
     `Bonjour ${prenom},`,
     '',
-    'Ton inscription à Alpha 40 est confirmée.',
+    'Merci pour ton inscription ! ❤️🔥',
     '',
-    "40 nuits où le Seigneur nous aiguise pour impacter dans nos sphères d'autorités.",
+    'Bienvenue dans la famille ALPHA 40 ! 🫂✨',
     '',
-    'Accès Alpha 40 :',
+    "On est vraiment heureux de t’avoir parmi nous. Cette aventure, on veut la vivre ensemble, dans la bonne humeur, le partage et la fraternité.",
+    '',
+    'Merci pour ta confiance, et surtout… bienvenue chez toi ! ❤️',
+    '',
+    'Voici ton accès Meet :',
     inviteLink,
     '',
-    "À bientôt,",
-    "L'équipe Alpha 40",
+    'À bientôt,',
+    "L'équipe ALPHA 40",
   ].join('\n');
 }
 
@@ -89,8 +105,8 @@ async function sendViaResend({ prenom, nom, email, inviteLink, fromName, fromEma
     body: JSON.stringify({
       from: `${fromName} <${fromEmail || 'onboarding@resend.dev'}>`,
       to: [email],
-      subject: 'Alpha 40 — confirmation',
-      html: buildEmailHTML({ prenom, nom, inviteLink }),
+      subject: 'Bienvenue dans ALPHA 40 ❤️🔥',
+      html: buildEmailHTML({ prenom, inviteLink }),
       text: buildEmailText({ prenom, inviteLink }),
     }),
   });
@@ -107,8 +123,8 @@ async function sendConfirmationEmail({ prenom, nom, email }) {
     return { sent: false, reason };
   }
 
-  const inviteLink = process.env.INVITE_LINK || process.env.EVENT_LINK || 'https://alpha40.com/';
-  const fromName = process.env.EMAIL_FROM_NAME || 'Alpha 40';
+  const inviteLink = process.env.INVITE_LINK || process.env.EVENT_LINK || 'https://meet.google.com/eyy-bofp-zyb';
+  const fromName = process.env.EMAIL_FROM_NAME || 'ALPHA 40';
   const fromEmail = (process.env.EMAIL_USER || '').trim();
 
   try {
@@ -119,9 +135,9 @@ async function sendConfirmationEmail({ prenom, nom, email }) {
         from: `"${fromName}" <${fromEmail}>`,
         replyTo: `"${fromName}" <${fromEmail}>`,
         to: email,
-        subject: 'Alpha 40 — confirmation',
+        subject: 'Bienvenue dans ALPHA 40 ❤️🔥',
         text: buildEmailText({ prenom, inviteLink }),
-        html: buildEmailHTML({ prenom, nom, inviteLink }),
+        html: buildEmailHTML({ prenom, inviteLink }),
       });
     }
     console.log(`📧 Invitation envoyée à ${email}`);

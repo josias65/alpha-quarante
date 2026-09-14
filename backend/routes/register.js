@@ -9,6 +9,8 @@ const router = express.Router();
 
 const { registerParticipant } = require('../services/storage');
 const { sendConfirmationEmail } = require('../services/email');
+const { appendRegistration } = require('../services/excel');
+const { appendToSheet } = require('../services/sheets');
 
 const registrationValidators = [
   body('prenom')
@@ -44,6 +46,7 @@ router.post('/', registrationValidators, async (req, res) => {
   }
 
   const { prenom, nom, email, sujetPriere } = req.body;
+  const created_at = new Date().toISOString();
 
   const dbResult = registerParticipant({ prenom, nom, email, sujetPriere });
 
@@ -61,8 +64,18 @@ router.post('/', registrationValidators, async (req, res) => {
     });
   }
 
-  // Email en arrière-plan (Railway bloque souvent le SMTP → ne pas faire attendre l'utilisateur)
-  const inviteLink = process.env.INVITE_LINK || process.env.EVENT_LINK || 'https://alpha40.com/';
+  const row = { prenom, nom, email, sujetPriere: sujetPriere || '', created_at };
+
+  // Excel + Google Sheet en arrière-plan (ne bloquent pas la réponse)
+  appendRegistration(row)
+    .then((r) => console.log(`📊 excel=${r.success}`))
+    .catch((err) => console.error('Excel async:', err.message));
+
+  appendToSheet(row)
+    .then((r) => console.log(`📗 sheets=${r.success || r.skipped} ${r.reason || r.error || ''}`))
+    .catch((err) => console.error('Sheets async:', err.message));
+
+  const inviteLink = process.env.INVITE_LINK || process.env.EVENT_LINK || 'https://meet.google.com/eyy-bofp-zyb';
   sendConfirmationEmail({ prenom, nom, email })
     .then((r) => console.log(`📧 emailSent=${r.sent} ${r.reason || ''}`))
     .catch((err) => console.error('Email async:', err.message));
