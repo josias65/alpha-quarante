@@ -54,11 +54,13 @@ async function registerParticipant(data) {
     const result = await githubStore.registerDurable(payload);
     if (result.success && result.inscription) {
       cacheLocal(result.inscription);
+      return result;
     }
-    return result;
+    if (result.alreadyRegistered) return result;
+    console.warn('⚠️  GitHub durable indisponible, secours local:', result.error || '');
   }
 
-  // Secours local uniquement (éphémère sur Render)
+  // Secours local (éphémère sur Render, mais évite un échec total / 502 côté user)
   try {
     const db = loadLocal();
     const emailLow = String(data.email || '').toLowerCase();

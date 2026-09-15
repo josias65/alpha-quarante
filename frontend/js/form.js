@@ -115,8 +115,33 @@
     setText('sum-priere', fields.sujetPriere ? fields.sujetPriere.value.trim() : '');
   }
 
+  async function postRegister(payload, attempt) {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+
+    const text = await res.text();
+    let data = null;
+    try {
+      data = text ? JSON.parse(text) : null;
+    } catch {
+      data = null;
+    }
+
+    // Pendant un redémarrage Render, réessayer 1 fois au lieu d'afficher une erreur brute
+    if ((res.status === 502 || res.status === 503 || res.status === 504) && attempt < 2) {
+      await new Promise((r) => setTimeout(r, 2500));
+      return postRegister(payload, attempt + 1);
+    }
+
+    return { res, data };
+  }
+
   async function handleSubmit(e) {
     e.preventDefault();
+    e.stopPropagation();
     const btn = document.getElementById('submitBtn');
     const globalErr = document.getElementById('form-global-error');
     if (globalErr) globalErr.style.display = 'none';
@@ -133,36 +158,35 @@
     };
 
     try {
-      const res = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const data = await res.json();
+      const { res, data } = await postRegister(payload, 1);
 
-      if (res.ok && data.success) {
+      if (res.ok && data && data.success) {
         sessionStorage.setItem('aq_prenom', payload.prenom);
         sessionStorage.setItem('aq_email', payload.email);
         sessionStorage.setItem('aq_email_sent', data.emailSent ? '1' : '0');
         sessionStorage.setItem('aq_invite', data.inviteLink || 'https://meet.google.com/eyy-bofp-zyb');
         window.location.href = 'confirmation.html';
-      } else if (res.status === 409) {
+        return;
+      }
+
+      if (res.status === 409) {
         if (globalErr) {
           globalErr.innerHTML = 'Cette adresse email est déjà inscrite. Vérifie ta boîte mail.';
           globalErr.style.display = 'block';
         }
-        btn.classList.remove('btn-loading');
-        btn.disabled = false;
-        btn.querySelector('span').textContent = 'Confirmer';
-      } else {
-        throw new Error(data.message || 'Erreur serveur');
+      } else if (globalErr) {
+        globalErr.innerHTML = (data && data.message)
+          ? data.message
+          : 'Inscription momentanément indisponible. Réessaie dans quelques secondes — reste sur cette page.';
+        globalErr.style.display = 'block';
       }
     } catch (err) {
       console.error('Inscription error:', err);
       if (globalErr) {
-        globalErr.innerHTML = 'Une erreur est survenue. Réessaie dans un instant.';
+        globalErr.innerHTML = 'Connexion interrompue. Réessaie dans quelques secondes — reste sur cette page.';
         globalErr.style.display = 'block';
       }
+    } finally {
       btn.classList.remove('btn-loading');
       btn.disabled = false;
       btn.querySelector('span').textContent = 'Confirmer';

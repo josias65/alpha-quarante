@@ -28,7 +28,7 @@ function apiHeaders() {
 async function getFile(path) {
   const res = await fetch(
     `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`,
-    { headers: apiHeaders() }
+    { headers: apiHeaders(), signal: AbortSignal.timeout(12000) }
   );
   if (res.status === 404) return null;
   if (!res.ok) {
@@ -53,6 +53,7 @@ async function putFile(path, content, message, sha) {
       method: 'PUT',
       headers: { ...apiHeaders(), 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
+      signal: AbortSignal.timeout(15000),
     }
   );
   if (!res.ok) {
