@@ -49,6 +49,8 @@ function escapeHtml(str) {
 function buildEmailHTML({ prenom, inviteLink }) {
   const name = escapeHtml(prenom);
   const link = escapeHtml(inviteLink);
+  const { buildCalendarEmailHtml } = require('./calendar');
+  const calendarBlock = buildCalendarEmailHtml({ inviteLink });
   return `<!DOCTYPE html>
 <html lang="fr">
 <head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /></head>
@@ -69,6 +71,7 @@ function buildEmailHTML({ prenom, inviteLink }) {
       <a href="${link}" style="color:#1a73e8;text-decoration:underline;font-weight:700;">Rejoindre ALPHA 40 sur Google Meet</a>
     </p>
     <p style="margin:0 0 8px;font-size:13px;color:#666666;word-break:break-all;">${link}</p>
+    ${calendarBlock}
     <p style="margin:28px 0 0;font-size:13px;color:#888888;">À bientôt,<br />L'équipe ALPHA 40</p>
   </div>
 </body>
@@ -76,6 +79,7 @@ function buildEmailHTML({ prenom, inviteLink }) {
 }
 
 function buildEmailText({ prenom, inviteLink }) {
+  const { buildCalendarEmailText } = require('./calendar');
   return [
     `Bonjour ${prenom},`,
     '',
@@ -89,6 +93,8 @@ function buildEmailText({ prenom, inviteLink }) {
     '',
     'Voici ton accès Meet :',
     inviteLink,
+    '',
+    buildCalendarEmailText({ inviteLink }),
     '',
     'À bientôt,',
     "L'équipe ALPHA 40",
@@ -175,6 +181,7 @@ async function sendViaResend({ prenom, email, inviteLink, fromName }) {
 }
 
 async function sendViaSmtp({ prenom, email, inviteLink, fromName, fromEmail }) {
+  const { buildIcs } = require('./calendar');
   const mail = {
     from: `"${fromName}" <${fromEmail}>`,
     replyTo: `"${fromName}" <${fromEmail}>`,
@@ -182,6 +189,18 @@ async function sendViaSmtp({ prenom, email, inviteLink, fromName, fromEmail }) {
     subject: 'Bienvenue dans ALPHA 40 ❤️🔥',
     text: buildEmailText({ prenom, inviteLink }),
     html: buildEmailHTML({ prenom, inviteLink }),
+    icalEvent: {
+      filename: 'alpha40-rappels.ics',
+      method: 'PUBLISH',
+      content: buildIcs({ inviteLink }),
+    },
+    attachments: [
+      {
+        filename: 'alpha40-rappels.ics',
+        content: buildIcs({ inviteLink }),
+        contentType: 'text/calendar; charset=utf-8',
+      },
+    ],
   };
 
   const attempts = [

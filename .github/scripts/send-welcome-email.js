@@ -3,6 +3,11 @@
  * (SMTP Gmail fonctionne sur GitHub Actions, pas sur Render)
  */
 const nodemailer = require('nodemailer');
+const {
+  buildCalendarEmailHtml,
+  buildCalendarEmailText,
+  buildIcs,
+} = require('../../backend/services/calendar');
 
 function escapeHtml(str) {
   return String(str || '')
@@ -27,6 +32,9 @@ async function main() {
 
   const name = escapeHtml(prenom);
   const link = escapeHtml(invite);
+  const calendarHtml = buildCalendarEmailHtml({ inviteLink: invite });
+  const calendarText = buildCalendarEmailText({ inviteLink: invite });
+  const ics = buildIcs({ inviteLink: invite });
 
   const html = `<!DOCTYPE html>
 <html lang="fr"><body style="margin:0;padding:28px 20px;font-family:Arial,Helvetica,sans-serif;font-size:15px;line-height:1.7;color:#222;">
@@ -38,6 +46,7 @@ async function main() {
   <p><strong>Voici ton accès Meet :</strong></p>
   <p><a href="${link}" style="color:#1a73e8;font-weight:700;">Rejoindre ALPHA 40 sur Google Meet</a></p>
   <p style="font-size:13px;color:#666;word-break:break-all;">${link}</p>
+  ${calendarHtml}
   <p style="margin-top:28px;font-size:13px;color:#888;">À bientôt,<br/>L'équipe ALPHA 40</p>
 </body></html>`;
 
@@ -54,6 +63,8 @@ async function main() {
     '',
     'Voici ton accès Meet :',
     invite,
+    '',
+    calendarText,
     '',
     'À bientôt,',
     "L'équipe ALPHA 40",
@@ -73,6 +84,18 @@ async function main() {
     subject: 'Bienvenue dans ALPHA 40 ❤️🔥',
     text,
     html,
+    icalEvent: {
+      filename: 'alpha40-rappels.ics',
+      method: 'PUBLISH',
+      content: ics,
+    },
+    attachments: [
+      {
+        filename: 'alpha40-rappels.ics',
+        content: ics,
+        contentType: 'text/calendar; charset=utf-8',
+      },
+    ],
   });
 
   console.log('Email sent:', info.messageId);

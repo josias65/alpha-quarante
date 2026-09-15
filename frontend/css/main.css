@@ -1028,6 +1028,38 @@ footer {
   animation: fadeSlideUp 0.8s 0.7s var(--ease-silk) forwards;
 }
 .confirmation-email-note svg { color: var(--gold); flex-shrink: 0; }
+.confirmation-calendar {
+  margin: 0 0 28px;
+  padding: 16px 18px;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+  background: rgba(26, 5, 8, 0.35);
+  opacity: 0;
+  animation: fadeSlideUp 0.8s 0.8s var(--ease-silk) forwards;
+}
+.confirmation-calendar-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--cream);
+}
+.confirmation-calendar-note {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 14px;
+  line-height: 1.45;
+}
+.confirmation-calendar-links {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+.confirmation-calendar-links a {
+  color: var(--gold);
+  font-weight: 600;
+  text-decoration: underline;
+  font-size: 0.95rem;
+}
 .confirmation-hint {
   font-size: 0.85rem;
   color: var(--muted);

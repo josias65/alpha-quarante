@@ -84,6 +84,21 @@ const apiLimiter = rateLimit({
 });
 app.use('/api/', apiLimiter);
 
+/** Fichier calendrier ALPHA 40 (UTC) — Apple / import Google */
+app.get('/api/calendar.ics', (req, res) => {
+  try {
+    const { buildIcs } = require('./services/calendar');
+    const ics = buildIcs();
+    res.setHeader('Content-Type', 'text/calendar; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="alpha40-rappels.ics"');
+    res.setHeader('Cache-Control', 'public, max-age=300');
+    return res.status(200).send(ics);
+  } catch (err) {
+    console.error('Calendar ICS:', err.message);
+    return res.status(500).json({ success: false, message: 'Calendrier indisponible.' });
+  }
+});
+
 /** Stats admin (peut être plus lent) */
 app.get('/api/admin/stats', async (req, res) => {
   const token = process.env.ADMIN_TOKEN || '';
